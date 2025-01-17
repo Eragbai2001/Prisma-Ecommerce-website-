@@ -1,16 +1,29 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/navbar'
 
-export default async function DashboardLayout({
-   children,
+export default function DashboardLayout({
+    children,
 }: {
-   children: React.ReactNode
+    children: React.ReactNode 
 }) {
-   return (
-      <>
-         <Navbar />
-         <div className="px-[1.4rem] md:px-[4rem] lg:px-[6rem] xl:px-[8rem] 2xl:px-[12rem]">
-            {children}
-         </div>
-      </>
-   )
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        setIsLoading(false)
+    }, [])
+
+    if (isLoading) {
+        return null // or a loading spinner
+    }
+
+    return (
+        <div>
+            <Navbar />
+            <div className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48">
+                {children}
+            </div>
+        </div>
+    )
 }

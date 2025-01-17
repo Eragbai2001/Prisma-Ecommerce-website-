@@ -1,5 +1,12 @@
 import { PrismaClient } from '@prisma/client'
 
+// filepath: /path/to/your/file.js
+require('dotenv').config()
+
+const jwtSecretKey = process.env.JWT_SECRET_KEY
+
+console.log(jwtSecretKey) // This will print your secret key
+
 function getRandomFloat(min, max, precision) {
    if (min >= max || precision < 0) {
       throw new Error(

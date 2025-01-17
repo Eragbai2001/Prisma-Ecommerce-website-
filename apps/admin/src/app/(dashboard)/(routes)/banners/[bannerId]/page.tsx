@@ -8,6 +8,7 @@ const Page = async ({ params }: { params: { bannerId: string } }) => {
          id: params.bannerId,
       },
    })
+   console.log('Fetched banner:', banner)
 
    return (
       <div className="flex-col">

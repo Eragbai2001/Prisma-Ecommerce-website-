@@ -25,7 +25,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       setIsMounted(true)
    }, [])
 
-   const onUpload = (result: any) => {
+   const onSuccess = (result: any) => {
+      console.log('Cloudinary Upload Result:', result)
+      console.log('Secure URL:', result.info.secure_url)
       onChange(result.info.secure_url)
    }
 
@@ -61,7 +63,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                </div>
             ))}
          </div>
-         <CldUploadWidget onUpload={onUpload} uploadPreset="t4drjppf">
+         <CldUploadWidget onSuccess={onSuccess} uploadPreset="ecommerce12">
             {({ open }) => {
                const onClick = () => {
                   open()

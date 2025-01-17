@@ -1,15 +1,6 @@
 'use client'
 
-import * as z from 'zod'
-import { useState } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { toast } from 'react-hot-toast'
-import { Trash } from 'lucide-react'
-import { Banner } from '@prisma/client'
-import { useParams, useRouter } from 'next/navigation'
-
-import { Input } from '@/components/ui/input'
+import { AlertModal } from '@/components/modals/alert-modal'
 import { Button } from '@/components/ui/button'
 import {
    Form,
@@ -19,14 +10,23 @@ import {
    FormLabel,
    FormMessage,
 } from '@/components/ui/form'
-import { Separator } from '@/components/ui/separator'
 import { Heading } from '@/components/ui/heading'
-import { AlertModal } from '@/components/modals/alert-modal'
 import ImageUpload from '@/components/ui/image-upload'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Banner } from '@prisma/client'
+import { Trash } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-hot-toast'
+import * as z from 'zod'
 
 const formSchema = z.object({
    label: z.string().min(1),
    image: z.string().min(1),
+   categories: z.array(z.string()).optional(),
 })
 
 type BannerFormValues = z.infer<typeof formSchema>
@@ -52,29 +52,45 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       defaultValues: initialData || {
          label: '',
          image: '',
+         categories: [],
       },
    })
 
    const onSubmit = async (data: BannerFormValues) => {
       try {
          setLoading(true)
+         let response
          if (initialData) {
-            await fetch(`/api/banners/${params.bannerId}`, {
+            response = await fetch(`/api/banners/${params.bannerId}`, {
                method: 'PATCH',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                body: JSON.stringify(data),
-               cache: 'no-store',
             })
          } else {
-            await fetch(`/banners`, {
+            response = await fetch(`/api/banners`, {
                method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json',
+               },
                body: JSON.stringify(data),
-               cache: 'no-store',
             })
          }
+
+         if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(errorText)
+         }
+
+         const result = await response.json()
+         console.log('Response:', result)
+
          router.refresh()
          router.push(`/banners`)
          toast.success(toastMessage)
       } catch (error: any) {
+         console.error('Error details:', error)
          toast.error('Something went wrong.')
       } finally {
          setLoading(false)
@@ -85,15 +101,21 @@ export const BannerForm: React.FC<BannerFormProps> = ({ initialData }) => {
       try {
          setLoading(true)
 
-         await fetch(`/api/banners/${params.bannerId}`, {
+         const response = await fetch(`/api/banners/${params.bannerId}`, {
             method: 'DELETE',
             cache: 'no-store',
          })
+
+         if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(errorText)
+         }
 
          router.refresh()
          router.push(`/banners`)
          toast.success('Banner deleted.')
       } catch (error: any) {
+         console.error('Error deleting banner:', error)
          toast.error(
             'Make sure you removed all categories using this banner first.'
          )

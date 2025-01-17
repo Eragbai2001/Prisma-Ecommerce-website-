@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  
 }
 
 model User {
@@ -12,10 +14,12 @@ model User {
   email String?  @unique
   phone String? @unique
 
+  OTP       String?
+  OTPExpiry DateTime?
+  
   name     String?
   birthday String?
 
-  OTP                   String?
   emailUnsubscribeToken String?  @unique @default(cuid())
   referralCode          String? @unique
 
@@ -149,7 +153,7 @@ model ProductReview {
   userId    String
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 
   @@unique([productId, userId], name: "UniqueProductProductReview")
   @@index([userId])
