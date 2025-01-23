@@ -32,6 +32,7 @@ import * as z from 'zod'
 const formSchema = z.object({
    title: z.string().min(2),
    description: z.string().min(1),
+   bannerId: z.string().min(1),
 })
 
 type CategoryFormValues = z.infer<typeof formSchema>
@@ -61,6 +62,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
       defaultValues: initialData || {
          title: '',
          description: '',
+         bannerId: '',
       },
    })
 
@@ -140,56 +142,74 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                className="space-y-8 w-full"
             >
                <div className="md:grid md:grid-cols-3 gap-8">
-                  <FormField
-                     control={form.control}
-                     name="title"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel>Name</FormLabel>
-                           <FormControl>
-                              <Input
-                                 disabled={loading}
-                                 placeholder="Category name"
-                                 {...field}
-                              />
-                           </FormControl>
-                           <FormMessage />
-                        </FormItem>
-                     )}
-                  />
-                  <FormField
-                     control={form.control}
-                     name="description"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel>Banner</FormLabel>
-                           <Select
-                              disabled={loading}
-                              onValueChange={field.onChange}
-                              value={field.value}
-                              defaultValue={field.value}
-                           >
-                              <FormControl>
-                                 <SelectTrigger>
-                                    <SelectValue
-                                       defaultValue={field.value}
-                                       placeholder="Select a banner"
-                                    />
-                                 </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                 {banners.map((banner) => (
-                                    <SelectItem
-                                       key={banner.id}
-                                       value={banner.id}
-                                    >
-                                       {banner.label}
-                                    </SelectItem>
-                                 ))}
-                              </SelectContent>
-                           </Select>
-                           <FormMessage />
-                        </FormItem>
+               <FormField
+      control={form.control}
+      name="title"
+      render={({ field }) => (
+         <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+               <Input
+                  disabled={loading}
+                  placeholder="Category name"
+                  {...field}
+               />
+            </FormControl>
+            <FormMessage />
+         </FormItem>
+      )}
+   />
+   <FormField
+      control={form.control}
+      name="description"
+      render={({ field }) => (
+         <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+               <Input
+                  disabled={loading}
+                  placeholder="Category description"
+                  {...field}
+               />
+            </FormControl>
+            <FormMessage />
+         </FormItem>
+      )}
+   />
+   <FormField
+      control={form.control}
+      name="bannerId"            
+      render={({ field }) => (
+         <FormItem>
+            <FormLabel>Banner</FormLabel>
+            <Select
+               disabled={loading}
+               onValueChange={field.onChange}
+               value={field.value}
+               defaultValue={field.value}
+            >
+               <FormControl>
+                  <SelectTrigger>
+                     <SelectValue
+                        defaultValue={field.value}
+                        placeholder="Select a banner"
+                     />
+                  </SelectTrigger>
+               </FormControl>
+               <SelectContent>
+                  {banners.map((banner) => (
+                     <SelectItem
+                        key={banner.id}
+                        value={banner.id}
+                     >
+                        {banner.label}
+                     </SelectItem>
+                  ))}
+               </SelectContent>
+            </Select>
+            <FormMessage />
+         </FormItem>
+                        
                      )}
                   />
                </div>

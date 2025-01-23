@@ -58,7 +58,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                      sizes="(min-width: 1000px) 30vw, 50vw"
                      className="object-cover"
                      alt="Image"
-                     src={url}
+                     src={url || '/placeholder.jpg'}
                   />
                </div>
             ))}

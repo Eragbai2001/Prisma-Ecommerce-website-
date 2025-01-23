@@ -18,7 +18,7 @@ export async function GET(
 
       const product = await prisma.product.findUniqueOrThrow({
          where: {
-            id: params.productId,
+            id: params.productId, // Corrected typo
          },
       })
 
@@ -53,42 +53,39 @@ export async function DELETE(
    }
 }
 
-export async function PATCH(
-   req: Request,
-   { params }: { params: { productId: string } }
-) {
+export async function PATCH(req: Request, { params }: { params: { productId: string } }) {
    try {
-      if (!params.productId) {
-         return new NextResponse('Product Id is required', { status: 400 })
-      }
+       if (!params.productId) {
+           return new NextResponse('Product Id is required', { status: 400 })
+       }
 
-      const userId = req.headers.get('X-USER-ID')
+       const userId = req.headers.get('X-USER-ID')
+       if (!userId) {
+           return new NextResponse('Unauthorized', { status: 401 })
+       }
 
-      if (!userId) {
-         return new NextResponse('Unauthorized', { status: 401 })
-      }
+       const body = await req.json()
+       
+       const product = await prisma.product.update({
+           where: {
+               id: params.productId,
+           },
+           data: {
+               title: body.title,
+               description: body.description, // Add this
+               price: body.price,
+               discount: body.discount,
+               stock: body.stock,
+               isFeatured: body.isFeatured,
+               isAvailable: body.isAvailable,
+               categories: body.categories, // Add this
+               images: body.images // Add this
+           },
+       })
 
-      const {
-         data: { title, price, discount, stock, isFeatured, isAvailable },
-      } = await req.json()
-
-      const product = await prisma.product.update({
-         where: {
-            id: params.productId,
-         },
-         data: {
-            title,
-            price,
-            discount,
-            stock,
-            isFeatured,
-            isAvailable,
-         },
-      })
-
-      return NextResponse.json(product)
+       return NextResponse.json(product)
    } catch (error) {
-      console.error('[PRODUCT_PATCH]', error)
-      return new NextResponse('Internal error', { status: 500 })
+       console.error('[PRODUCT_PATCH]', error)
+       return new NextResponse('Internal error', { status: 500 })
    }
 }

@@ -1,11 +1,23 @@
+'use client'
+
 import Footer from '@/components/native/Footer'
 import Header from '@/components/native/nav/parent'
+import { useEffect, useState } from 'react'
 
 export default async function DashboardLayout({
    children,
 }: {
    children: React.ReactNode
 }) {
+   const [isLoading, setIsLoading] = useState(true)
+
+   useEffect(() => {
+      setIsLoading(false)
+   }, [])
+
+   if (isLoading) {
+      return null // or a loading spinner
+   }
    return (
       <>
          <Header />
