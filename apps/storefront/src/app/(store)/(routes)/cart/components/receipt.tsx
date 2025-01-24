@@ -4,7 +4,7 @@ import { Separator } from '@/components/native/separator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { useAuthenticated } from '@/hooks/useAuthentication'
-import { isVariableValid } from '@/lib/utils'
+import { formatter, isVariableValid } from '@/lib/utils'
 import { useCartContext } from '@/state/Cart'
 import Link from 'next/link'
 
@@ -28,11 +28,11 @@ export function Receipt() {
       const payableAmount = afterDiscountAmount + taxAmount
 
       return {
-         totalAmount: totalAmount.toFixed(2),
-         discountAmount: discountAmount.toFixed(2),
-         afterDiscountAmount: afterDiscountAmount.toFixed(2),
-         taxAmount: taxAmount.toFixed(2),
-         payableAmount: payableAmount.toFixed(2),
+         totalAmount: formatter.format(totalAmount),
+         discountAmount: formatter.format(discountAmount),
+         afterDiscountAmount: formatter.format(afterDiscountAmount),
+         taxAmount: formatter.format(taxAmount),
+         payableAmount: formatter.format(payableAmount),
       }
    }
 
@@ -45,21 +45,21 @@ export function Receipt() {
             <div className="block space-y-[1vh]">
                <div className="flex justify-between">
                   <p>Total Amount</p>
-                  <h3>${calculatePayableCost().totalAmount}</h3>
+                  <h3>{calculatePayableCost().totalAmount}</h3>
                </div>
                <div className="flex justify-between">
                   <p>Discount Amount</p>
-                  <h3>${calculatePayableCost().discountAmount}</h3>
+                  <h3>{calculatePayableCost().discountAmount}</h3>
                </div>
                <div className="flex justify-between">
                   <p>Tax Amount</p>
-                  <h3>${calculatePayableCost().taxAmount}</h3>
+                  <h3>{calculatePayableCost().taxAmount}</h3>
                </div>
             </div>
             <Separator className="my-4" />
             <div className="flex justify-between">
                <p>Payable Amount</p>
-               <h3>${calculatePayableCost().payableAmount}</h3>
+               <h3>{calculatePayableCost().payableAmount}</h3>
             </div>
          </CardContent>
          <Separator />
