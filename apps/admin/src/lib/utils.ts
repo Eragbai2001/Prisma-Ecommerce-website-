@@ -7,10 +7,9 @@ export function cn(...inputs: ClassValue[]) {
    return twMerge(clsx(inputs))
 }
 
-export const formatter = new Intl.NumberFormat('en-US', {
+export const formatter = new Intl.NumberFormat('en-NG', {
    style: 'currency',
-   currency: 'USD',
-   maximumFractionDigits: 2,
+   currency: 'NGN',
 })
 
 export function getErrorResponse(

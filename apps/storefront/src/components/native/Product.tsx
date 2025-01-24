@@ -8,7 +8,9 @@ import {
    CardHeader,
    CardTitle,
 } from '@/components/ui/card'
+import { formatter } from '@/lib/utils'
 import { ProductWithIncludes } from '@/types/prisma'
+// Import formatter from utils
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -26,16 +28,6 @@ export const ProductGrid = ({
    )
 }
 
-export const ProductSkeletonGrid = () => {
-   return (
-      <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-         {[...Array(12)].map(() => (
-            <ProductSkeleton key={Math.random()} />
-         ))}
-      </div>
-   )
-}
-
 export const Product = ({ product }: { product: ProductWithIncludes }) => {
    function Price() {
       if (product?.discount > 0) {
@@ -44,15 +36,17 @@ export const Product = ({ product }: { product: ProductWithIncludes }) => {
          return (
             <div className="flex gap-2 items-center">
                <Badge className="flex gap-4" variant="destructive">
-                  <div className="line-through">${product?.price}</div>
+                  <div className="line-through">
+                     {formatter.format(product?.price)}
+                  </div>
                   <div>%{percentage.toFixed(2)}</div>
                </Badge>
-               <h2 className="">${price.toFixed(2)}</h2>
+               <h2 className="">{formatter.format(price)}</h2>
             </div>
          )
       }
 
-      return <h2>${product?.price}</h2>
+      return <h2>{formatter.format(product?.price)}</h2>
    }
 
    return (
@@ -88,30 +82,6 @@ export const Product = ({ product }: { product: ProductWithIncludes }) => {
                )}
             </CardFooter>
          </Card>
-      </Link>
-   )
-}
-
-export function ProductSkeleton() {
-   return (
-      <Link href="#">
-         <div className="animate-pulse rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800">
-            <div className="relative h-full w-full">
-               <div className="flex h-40 w-full items-center justify-center rounded bg-neutral-300 dark:bg-neutral-700 ">
-                  <ImageSkeleton />
-               </div>
-            </div>
-            <div className="p-5">
-               <div className="w-full">
-                  <div className="mb-4 h-2.5 w-48 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                  <div className="mb-2.5 h-2 max-w-[480px] rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                  <div className="mb-2.5 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                  <div className="mb-2.5 h-2 max-w-[440px] rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                  <div className="mb-2.5 h-2 max-w-[460px] rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-                  <div className="h-2 max-w-[360px] rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
-               </div>
-            </div>
-         </div>
       </Link>
    )
 }

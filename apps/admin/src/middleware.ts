@@ -22,12 +22,9 @@ export async function middleware(req: NextRequest) {
    }
 
    if (!process.env.JWT_SECRET_KEY) {
-      console.error('JWT_SECRET_KEY is not configured');
-      return new NextResponse(
-        JSON.stringify({ success: false, message: 'Server configuration error' }),
-        { status: 500, headers: { 'content-type': 'application/json' } }
-      );
-    }
+      console.error('JWT secret key is missing')
+      return getErrorResponse(500, 'Internal Server Error')
+   }
 
    const token = getToken()
 

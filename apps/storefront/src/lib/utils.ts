@@ -15,6 +15,10 @@ export function formatDate(input: string | number): string {
       year: 'numeric',
    })
 }
+export const formatter = new Intl.NumberFormat('en-NG', {
+   style: 'currency',
+   currency: 'NGN',
+})
 
 export function absoluteUrl(path: string) {
    return `${process.env.NEXT_PUBLIC_APP_URL}${path}`
