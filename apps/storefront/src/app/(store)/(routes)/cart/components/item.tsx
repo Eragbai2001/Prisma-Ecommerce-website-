@@ -18,6 +18,7 @@ import { MinusIcon, PlusIcon, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { formatter } from '@/lib/utils' // Import formatter from utils
 
 export const Item = ({ cartItem }) => {
    const { authenticated } = useAuthenticated()
@@ -212,16 +213,17 @@ export const Item = ({ cartItem }) => {
          return (
             <div className="flex gap-2 items-center">
                <Badge className="flex gap-4" variant="destructive">
-                  <div className="line-through">${product?.price}</div>
+                  <div className="line-through">{formatter.format(product?.price)}</div>
                   <div>%{percentage.toFixed(2)}</div>
                </Badge>
-               <h2 className="">${price.toFixed(2)}</h2>
+               <h2 className="">{formatter.format(price)}</h2>
             </div>
          )
       }
 
-      return <h2>${product?.price}</h2>
+      return <h2>{formatter.format(product?.price)}</h2>
    }
+
    return (
       <Card>
          <CardHeader className="p-0 md:hidden">

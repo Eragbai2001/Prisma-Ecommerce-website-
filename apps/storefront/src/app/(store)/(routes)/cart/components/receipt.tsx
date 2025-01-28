@@ -4,15 +4,22 @@ import { Separator } from '@/components/native/separator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { useAuthenticated } from '@/hooks/useAuthentication'
-import { formatter, isVariableValid } from '@/lib/utils'
+import { isVariableValid } from '@/lib/utils'
 import { useCartContext } from '@/state/Cart'
 import Link from 'next/link'
+import { useState, useMemo } from 'react'
+import { PaystackButton } from 'react-paystack'
+import { formatter } from '@/lib/utils' // Import formatter from utils
 
 export function Receipt() {
    const { authenticated } = useAuthenticated()
    const { loading, cart, refreshCart, dispatchCart } = useCartContext()
 
-   function calculatePayableCost() {
+   const [email, setEmail] = useState('')
+   const [name, setName] = useState('')
+   const [phone, setPhone] = useState('')
+
+   const calculatePayableCost = useMemo(() => {
       let totalAmount = 0,
          discountAmount = 0
 
@@ -28,16 +35,45 @@ export function Receipt() {
       const payableAmount = afterDiscountAmount + taxAmount
 
       return {
-         totalAmount: formatter.format(totalAmount),
-         discountAmount: formatter.format(discountAmount),
-         afterDiscountAmount: formatter.format(afterDiscountAmount),
-         taxAmount: formatter.format(taxAmount),
-         payableAmount: formatter.format(payableAmount),
+         totalAmount: totalAmount.toFixed(2),
+         discountAmount: discountAmount.toFixed(2),
+         afterDiscountAmount: afterDiscountAmount.toFixed(2),
+         taxAmount: taxAmount.toFixed(2),
+         payableAmount: payableAmount.toFixed(2),
       }
+   }, [cart?.items])
+
+   const isCartEmpty =
+      !isVariableValid(cart?.items) || cart['items'].length === 0
+
+   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+
+   const componentProps = {
+      email,
+      amount: parseFloat(calculatePayableCost.payableAmount) * 100, // Convert to kobo
+      metadata: {
+         custom_fields: [
+            {
+               display_name: 'Name',
+               variable_name: 'name',
+               value: name,
+            },
+            {
+               display_name: 'Phone',
+               variable_name: 'phone',
+               value: phone,
+            },
+         ],
+      },
+      publicKey,
+      text: 'Pay Now',
+      onSuccess: () =>
+         alert('Thanks for doing business with us! Come back soon!!'),
+      onClose: () => alert("Wait! You need this oil, don't go!!!!"),
    }
 
    return (
-      <Card className={loading && 'animate-pulse'}>
+      <Card className={loading ? 'animate-pulse' : ''}>
          <CardHeader className="p-4 pb-0">
             <h2 className="font-bold tracking-tight">Receipt</h2>
          </CardHeader>
@@ -45,21 +81,21 @@ export function Receipt() {
             <div className="block space-y-[1vh]">
                <div className="flex justify-between">
                   <p>Total Amount</p>
-                  <h3>{calculatePayableCost().totalAmount}</h3>
+                  <h3>{formatter.format(parseFloat(calculatePayableCost.totalAmount))}</h3>
                </div>
                <div className="flex justify-between">
                   <p>Discount Amount</p>
-                  <h3>{calculatePayableCost().discountAmount}</h3>
+                  <h3>{formatter.format(parseFloat(calculatePayableCost.discountAmount))}</h3>
                </div>
                <div className="flex justify-between">
                   <p>Tax Amount</p>
-                  <h3>{calculatePayableCost().taxAmount}</h3>
+                  <h3>{formatter.format(parseFloat(calculatePayableCost.taxAmount))}</h3>
                </div>
             </div>
             <Separator className="my-4" />
             <div className="flex justify-between">
                <p>Payable Amount</p>
-               <h3>{calculatePayableCost().payableAmount}</h3>
+               <h3>{formatter.format(parseFloat(calculatePayableCost.payableAmount))}</h3>
             </div>
          </CardContent>
          <Separator />
@@ -69,9 +105,7 @@ export function Receipt() {
                className="w-full"
             >
                <Button
-                  disabled={
-                     !isVariableValid(cart?.items) || cart['items'].length === 0
-                  }
+                  disabled={isCartEmpty}
                   className="w-full"
                >
                   Checkout
